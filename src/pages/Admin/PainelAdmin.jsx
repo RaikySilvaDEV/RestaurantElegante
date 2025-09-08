@@ -127,14 +127,14 @@ export default function PainelAdmin({ onLogout }) {
     // Canal para monitorar todas as mudanças no schema 'public'
     const channel = supabaseAdmin.channel('admin-db-changes');
 
-    channel.on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, (payload) => {
+    channel.on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, () => {
       showRealtimeAlert(`Novas atualizações em 'Reservas' recebidas.`);
       fetchDashboardData();
       fetchReservas();
-    }).on('postgres_changes', { event: '*', schema: 'public', table: 'itens_cardapio' }, (payload) => {
+    }).on('postgres_changes', { event: '*', schema: 'public', table: 'itens_cardapio' }, () => {
       showRealtimeAlert(`O cardápio foi atualizado.`);
       fetchItensCardapio();
-    }).on('postgres_changes', { event: '*', schema: 'public', table: 'categorias' }, (payload) => {
+    }).on('postgres_changes', { event: '*', schema: 'public', table: 'categorias' }, () => {
       showRealtimeAlert(`As categorias foram atualizadas.`);
       fetchCategorias();
       fetchItensCardapio(); // Atualiza o cardápio também, pois a categoria pode ter mudado
