@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Container } from "./ui/Container";
-import { Button } from "./ui/Button";
+import { Container } from "../ui/Container";
+import { Button } from "../ui/Button";
 
 const Hero = () => {
   const [scrolled, setScrolled] = useState(false);

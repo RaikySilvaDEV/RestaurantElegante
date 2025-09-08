@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "../components/ui/Container";
-import { SectionTitle } from "../components/SectionTitle";
-import { Button } from "../components/ui/Button";
-import { supabase } from "../config/SupabaseClient.js";
+import { supabase } from "../../config/SupabaseClient.js";
+import { Container } from "../ui/Container.jsx";
+import { SectionTitle } from "../ui/SectionTitle.jsx";
+import { Button } from "../ui/Button.jsx";
+
 const Cardapio = ({ isPage = false }) => {
   const [menu, setMenu] = useState([]);
 

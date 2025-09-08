@@ -3,10 +3,10 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../config/hooks/useAuth';
 import { supabase } from '../config/SupabaseClient';
 import { Container } from '../components/ui/Container';
-import { SectionTitle } from '../components/SectionTitle';
+import { SectionTitle } from '../components/ui/SectionTitle.jsx';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import StatusAlert from '../components/StatusAlert.jsx';
+import StatusAlert from '../components/ui/StatusAlert.jsx';
 
 const MinhasReservas = () => {
   const { user, loading: authLoading } = useAuth();

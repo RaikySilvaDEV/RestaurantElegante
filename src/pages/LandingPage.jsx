@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Hero from "../components/Hero";
-import Highlights from "./Highlights";
-import Sobre from "./Sobre";
-import Cardapio from "./Cardapio";
-import Galeria from "./Galeria";
-import Depoimentos from "./Depoimentos"; // Note: This was already correct, but I'm showing the file for context.
-import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import ReservationAlert from "../pages/ReservationAlert";
+import Footer from "../components/Footer";
+import Hero from "../components/sections/Hero.jsx";
+import Highlights from "../components/sections/Highlights.jsx";
+import Sobre from "../components/sections/Sobre.jsx";
+import Cardapio from "../components/pages/Cardapio.jsx";
+import Galeria from "../components/sections/Galeria.jsx";
+import Depoimentos from "../components/sections/Depoimentos.jsx";
+import Contato from "../components/pages/Contato.jsx";
+import ReservationAlert from "../components/ui/ReservationAlert.jsx";
+
 
 export default function LandingPage() {
   const location = useLocation();
@@ -33,6 +35,7 @@ export default function LandingPage() {
         <Cardapio />
         <Galeria />
         <Depoimentos />
+        <Contato />
       </main>
       {alertData && <ReservationAlert data={alertData} onClose={() => setAlertData(null)} />}
       <Footer />

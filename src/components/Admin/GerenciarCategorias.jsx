@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionTitle } from '../SectionTitle';
+import { SectionTitle } from '../ui/SectionTitle';
 import { Button } from '../ui/Button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
@@ -7,7 +7,7 @@ const GerenciarCategorias = ({ categorias, onNew, onEdit, onRemove }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <SectionTitle title="Gerenciar Categorias" subtitle="Crie, edite ou remova as categorias do cardápio." />
+        <SectionTitle title="Gerenciar Categorias" subtitle="Adicione, edite ou remova categorias de pratos." />
         <Button onClick={onNew} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4" />
           Nova Categoria
@@ -23,7 +23,7 @@ const GerenciarCategorias = ({ categorias, onNew, onEdit, onRemove }) => {
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {categorias.length === 0 && (
-              <tr><td colSpan="2" className="p-4 text-center text-zinc-500">Nenhuma categoria cadastrada.</td></tr>
+              <tr><td colSpan="2" className="p-4 text-center text-zinc-500">Nenhuma categoria encontrada.</td></tr>
             )}
             {categorias.map((cat) => (
               <tr key={cat.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">

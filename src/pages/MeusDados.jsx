@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../config/hooks/useAuth';
 import { supabase } from '../config/SupabaseClient';
 import { Container } from '../components/ui/Container';
-import { SectionTitle } from '../components/SectionTitle';
+import { SectionTitle } from '../components/ui/SectionTitle';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from '../components/ui/Button';
@@ -118,4 +118,3 @@ const MeusDados = () => {
 };
 
 export default MeusDados;
-

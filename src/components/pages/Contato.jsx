@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Container } from "../components/ui/Container";
-import { SectionTitle } from "../components/SectionTitle";
+import { SectionTitle } from "../ui/SectionTitle";
 import { Phone, Clock, Instagram, Facebook, Mail } from "lucide-react";
-import { Button } from "../components/ui/Button";
+import { Button } from "../ui/Button";
+import { Container } from "../ui/Container";
 
 const Contato = () => {
   const [formStatus, setFormStatus] = useState('');

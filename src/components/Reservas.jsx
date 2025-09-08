@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "./ui/Container.jsx";
-import { SectionTitle } from "./SectionTitle.jsx";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useAuth } from "../config/hooks/useAuth.jsx";
+
 import { supabase } from "../config/SupabaseClient.js";
-import { Button } from "./ui/Button.jsx";
+import { useAuth } from "../config/hooks/useAuth.jsx";
+import { Container } from "../components/ui/Container.jsx";
+import { SectionTitle } from "../components/ui/SectionTitle.jsx";
+import { Button } from "../components/ui/Button.jsx";
+import AuthModal from "./ui/AuthModal.jsx";
 
 const Reservas = () => {
-  const { user, signInWithGoogle } = useAuth();
+  const { user } = useAuth();
   const [form, setForm] = useState({
     nome: '',
     email: '',
@@ -18,6 +20,7 @@ const Reservas = () => {
     observacoes: '',
   });
   const [status, setStatus] = useState({ message: "", type: "" });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const reservaParaAlterar = location.state?.reservaParaAlterar;
@@ -129,11 +132,10 @@ const Reservas = () => {
           <p className="mb-6 text-zinc-600 dark:text-zinc-300">
             Para fazer uma reserva, por favor, faça login ou crie uma conta.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button onClick={signInWithGoogle} className="w-full sm:w-auto">
-              Login com Google
-            </Button>
-          </div>
+          <Button onClick={() => setAuthModalOpen(true)} className="w-full sm:w-auto">
+            Entrar ou Criar Conta
+          </Button>
+          <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
         </div>
       );
     }
@@ -150,7 +152,7 @@ const Reservas = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="text-sm text-zinc-600 dark:text-zinc-300">Nome (como na sua conta)</label>
-            <input name="nome" value={form.nome} onChange={onChange} required className="mt-1 w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-200" />
+            <input name="nome" value={form.nome} onChange={onChange} required className="mt-1 w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-200"  />
           </div>
           <div>
             <label className="text-sm text-zinc-600 dark:text-zinc-300">E-mail (como na sua conta)</label>

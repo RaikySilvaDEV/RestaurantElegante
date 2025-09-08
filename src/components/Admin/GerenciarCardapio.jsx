@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionTitle } from '../SectionTitle';
+import { SectionTitle } from '../ui/SectionTitle';
 import { Button } from '../ui/Button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 

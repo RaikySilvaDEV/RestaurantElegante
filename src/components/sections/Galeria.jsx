@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Container } from "../components/ui/Container.jsx";
-import { SectionTitle } from "../components/SectionTitle.jsx";
-import { supabase } from "../config/SupabaseClient.js";
+import { supabase } from "../../config/SupabaseClient.js";
+import { Container } from "../ui/Container.jsx";
+import { SectionTitle } from "../ui/SectionTitle.jsx";
 
 const Galeria = () => {
   const [gallery, setGallery] = useState([]);

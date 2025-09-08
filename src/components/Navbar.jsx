@@ -1,16 +1,19 @@
 import React from 'react'
 import { useState, useEffect } from "react";
-import { ChefHat } from "lucide-react";
-import { Container } from "./ui/Container.jsx";
-import { Button } from "./ui/Button.jsx";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../config/hooks/useAuth.jsx";
-import { supabase } from "../config/SupabaseClient.js";
-import ProfileDropdown from './ProfileDropdown.jsx';
+import { ChefHat } from "lucide-react";
+
+import { Container } from "./ui/Container";
+import { Button } from "./ui/Button";
+import { useAuth } from "../config/hooks/useAuth";
+import ProfileDropdown from "./ui/ProfileDropdown";
+import AuthModal from "./ui/AuthModal";
+import { supabase } from "../config/SupabaseClient";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
   const [nav, setNav] = useState([]);
@@ -33,7 +36,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isHomePage = location.pathname === '/';
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
@@ -42,23 +44,25 @@ export default function Navbar() {
         : "bg-transparent"
     }`}>
       <Container className="flex h-16 items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-2 font-semibold">
+        <a href="/" className="flex items-center gap-2 font-semibold">
           <ChefHat className="h-6 w-6" />
           <span className="hidden sm:inline">Restaurante Elegante</span>
         </a>
         <nav className="hidden md:flex items-center gap-6">
           {nav && nav.map((item) => (
-            <Link
-              key={item.nome}
-              to={item.href.startsWith('#') && isHomePage ? item.href : item.href}
-              className="text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-            >
-              {item.nome}
-            </Link>
+            item.href.startsWith('#') ? (
+              <a key={item.nome} href={`/${item.href}`} className="text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">
+                {item.nome}
+              </a>
+            ) : (
+              <Link key={item.nome} to={item.href} className="text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">
+                {item.nome}
+              </Link>
+            )
           ))}
           {user 
             ? <ProfileDropdown user={user} />
-            : <Button href="/reservas">Reservar</Button>}
+            : <Button onClick={() => setAuthModalOpen(true)}>Reservar</Button>}
         </nav>
         <button
           onClick={() => setOpen(!open)}
@@ -78,20 +82,24 @@ export default function Navbar() {
         <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800">
           <Container className="py-4 flex flex-col gap-4">
             {nav.map((item) => {
-            const finalHref = item.href.startsWith('#') && isHomePage ? item.href : item.href;
-            return (
-              <Link key={item.nome} to={finalHref} className="hover:underline" onClick={() => setOpen(false)}>
+              if (item.href.startsWith('#')) {
+                return <a key={item.nome} href={`/${item.href}`} className="hover:underline" onClick={() => setOpen(false)}>{item.nome}</a>
+              }
+              // Para links que não são âncoras, o Link do react-router-dom funciona bem
+              return <Link key={item.nome} to={item.href} className="hover:underline" onClick={() => setOpen(false)}>
                 {item.nome}
               </Link>
-            );
-          })}
+            })}
             {user ? (
               <ProfileDropdown user={user} isMobile={true} closeMobileMenu={() => setOpen(false)} />
             ) : (
-              <Button href="/reservas" onClick={() => setOpen(false)}>Reservar</Button>
+              <Button onClick={() => { setAuthModalOpen(true); setOpen(false); }}>Reservar</Button>
             )}
           </Container>
         </div>
+      )}
+      {!user && (
+        <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       )}
     </header>
   );

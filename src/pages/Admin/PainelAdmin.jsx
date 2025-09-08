@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Footer from "../../components/Footer";
-import { Container } from "../../components/ui/Container";
-import { Button } from "../../components/ui/Button";
-import { LayoutDashboard, Calendar, Utensils, LayoutList, LogOut, X, Menu } from "lucide-react";
 import { supabaseAdmin } from "../../config/SupabaseClient";
-import Modal from "../../components/ui/Modal";
+import { LayoutDashboard, Calendar, Utensils, LayoutList, LogOut, X, Menu } from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import  TableSkeleton  from "../../components/ui/TableSkeleton";
+import { Container } from "../../components/ui/Container";
+import  Modal from "../../components/ui/Modal";
 import FormCardapio from "../../components/Admin/FormCardapio";
-import AdminAlert from "../../components/Admin/AdminAlert";
 import FormCategoria from "../../components/Admin/FormCategoria";
-import TableSkeleton from "../../components/Admin/TableSkeleton";
-import Dashboard from "../../components/Admin/Dashboard";
+import AdminAlert from "../../components/Admin/AdminAlert";
+import Dashboard from "../Admin/Dashboard";
 import GerenciarReservas from "../../components/Admin/GerenciarReservas";
 import GerenciarCardapio from "../../components/Admin/GerenciarCardapio";
 import GerenciarCategorias from "../../components/Admin/GerenciarCategorias";
+import Footer from "../../components/Footer";
 
 
 export default function PainelAdmin({ onLogout }) {
@@ -24,6 +24,8 @@ export default function PainelAdmin({ onLogout }) {
   const [dashboardData, setDashboardData] = useState({
     stats: { reservasHoje: 0, pessoasHoje: 0, reservasPendentes: 0 },
     proximasReservas: [],
+    reservasPorDia: [],
+    statusDistribution: [],
   });
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -79,6 +81,10 @@ export default function PainelAdmin({ onLogout }) {
     // Busca estatísticas
     const { data: statsData, error: statsError } = await supabaseAdmin.rpc('get_dashboard_stats', { data_hoje: hoje });
 
+    // Busca dados para os gráficos
+    const { data: reservasDiaData, error: reservasDiaError } = await supabaseAdmin.rpc('get_reservas_por_dia');
+    const { data: statusData, error: statusError } = await supabaseAdmin.rpc('get_dashboard_stats', { data_hoje: hoje });
+
     // Busca próximas 5 reservas pendentes
     const { data: proximasData, error: proximasError } = await supabaseAdmin
       .from('reservas')
@@ -88,17 +94,20 @@ export default function PainelAdmin({ onLogout }) {
       .order('hora_reserva', { ascending: true })
       .limit(5);
 
-    if (statsError || proximasError) {
-      console.error("Erro ao buscar dados do dashboard:", statsError || proximasError);
+    if (statsError || proximasError || reservasDiaError || statusError) {
+      console.error("Erro ao buscar dados do dashboard:", statsError || proximasError || reservasDiaError || statusError);
       setAlert({ message: "Não foi possível carregar os dados do dashboard.", type: 'error' });
+      // Do not set partial data if there's an error to avoid crashes
     } else {
       setDashboardData({
         stats: {
-          reservasHoje: statsData[0].reservas_hoje,
-          pessoasHoje: statsData[0].total_pessoas_hoje,
-          reservasPendentes: statsData[0].reservas_pendentes
+          reservasHoje: statsData[0]?.reservas_hoje || 0,
+          pessoasHoje: statsData[0]?.total_pessoas_hoje || 0,
+          reservasPendentes: statsData[0]?.reservas_pendentes || 0
         },
-        proximasReservas: proximasData
+        proximasReservas: proximasData || [],
+        reservasPorDia: reservasDiaData || [],
+        statusDistribution: statusData || [],
       });
     }
   }, [supabaseAdmin]);
@@ -109,25 +118,33 @@ export default function PainelAdmin({ onLogout }) {
       .finally(() => setLoading(false));
   }, [fetchDashboardData, fetchReservas, fetchItensCardapio, fetchCategorias]);
 
+  const showRealtimeAlert = (message) => {
+    setAlert({ message, type: 'info' });
+  };
+
   // Efeito para Realtime Subscriptions
   useEffect(() => {
-    const channel = supabaseAdmin
-      .channel('admin-reservas-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'reservas' },
-        (payload) => {
-          console.log('Mudança detectada na tabela de reservas:', payload);
-          // Recarrega os dados do dashboard e as reservas
-          fetchDashboardData();
-          fetchReservas();
-        }
-      )
-      .subscribe();
+    // Canal para monitorar todas as mudanças no schema 'public'
+    const channel = supabaseAdmin.channel('admin-db-changes');
+
+    channel.on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, (payload) => {
+      showRealtimeAlert(`Novas atualizações em 'Reservas' recebidas.`);
+      fetchDashboardData();
+      fetchReservas();
+    }).on('postgres_changes', { event: '*', schema: 'public', table: 'itens_cardapio' }, (payload) => {
+      showRealtimeAlert(`O cardápio foi atualizado.`);
+      fetchItensCardapio();
+    }).on('postgres_changes', { event: '*', schema: 'public', table: 'categorias' }, (payload) => {
+      showRealtimeAlert(`As categorias foram atualizadas.`);
+      fetchCategorias();
+      fetchItensCardapio(); // Atualiza o cardápio também, pois a categoria pode ter mudado
+    }).subscribe();
 
     // Limpa a inscrição ao desmontar o componente
-    return () => supabaseAdmin.removeChannel(channel);
-  }, [supabaseAdmin, fetchDashboardData, fetchReservas]);
+    return () => {
+      supabaseAdmin.removeChannel(channel);
+    };
+  }, [supabaseAdmin, fetchDashboardData, fetchReservas, fetchItensCardapio, fetchCategorias]);
 
   const updateStatus = async (id, status) => {
     const { error } = await supabaseAdmin
@@ -282,7 +299,7 @@ export default function PainelAdmin({ onLogout }) {
             <h1 className="text-2xl font-bold mb-8">Painel Admin</h1>
             <NavLinks />
           </div>
-          <Button onClick={onLogout} className="w-full bg-red-600 hover:bg-red-700"><LogOut className="h-4 w-4 mr-3" /> Sair</Button>
+          <Button onClick={onLogout} className="w-full bg-red-600 hover:bg-red-700"><LogOut className="h-4 w-4 mr-3" /> Sair</Button> 
         </aside>
 
         {/* Conteúdo principal que ocupa o restante do espaço */}
@@ -320,7 +337,7 @@ export default function PainelAdmin({ onLogout }) {
                     <h1 className="text-2xl font-bold mb-8">Menu</h1>
                     <NavLinks isMobile={true} />
                   </div>
-                  <Button onClick={onLogout} className="w-full bg-red-600 hover:bg-red-700"><LogOut className="h-4 w-4 mr-3" /> Sair</Button>
+                  <Button onClick={onLogout} className="w-full bg-red-600 hover:bg-red-700"><LogOut className="h-4 w-4 mr-3" /> Sair</Button> 
                 </motion.div>
               </motion.div>
             )}
@@ -340,7 +357,7 @@ export default function PainelAdmin({ onLogout }) {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {activeView === 'dashboard' && <Dashboard stats={dashboardData.stats} proximasReservas={dashboardData.proximasReservas} />}
+                    {activeView === 'dashboard' && <Dashboard data={dashboardData} />}
                     {activeView === 'reservas' && <GerenciarReservas reservas={reservas} onUpdateStatus={updateStatus} />}
                     {activeView === 'cardapio' && <GerenciarCardapio itens={itensCardapio} onNew={handleNewItem} onEdit={handleEditItem} onRemove={handleRemoveItem} />}
                     {activeView === 'categorias' && <GerenciarCategorias categorias={categorias} onNew={handleNovaCategoria} onEdit={handleEditarCategoria} onRemove={handleRemoveCategoria} />}
@@ -381,7 +398,7 @@ export default function PainelAdmin({ onLogout }) {
             </div>
           </div>
         </Modal>
-      <Footer />
+      <Footer showNav={false} />
     </div>
   );
 }

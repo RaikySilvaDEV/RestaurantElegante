@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Clock } from "lucide-react";
-import { Container } from "../components/ui/Container";
-import { SectionTitle } from "../components/SectionTitle";
+import { Container } from "../ui/Container";
+import { SectionTitle } from "../ui/SectionTitle";
 
 const Sobre = () => (
   <section id="sobre" className="bg-white dark:bg-zinc-950">

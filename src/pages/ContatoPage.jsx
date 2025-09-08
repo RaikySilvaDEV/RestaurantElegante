@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import Contato from './Contato';
+import Contato from '../components/pages/Contato';
 
 const ContatoPage = () => {
   return (

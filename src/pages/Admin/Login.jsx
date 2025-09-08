@@ -1,11 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import { supabase } from "../../config/SupabaseClient.js";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
+import { SectionTitle } from "../../components/ui/SectionTitle";
 import { Container } from "../../components/ui/Container";
 import { Button } from "../../components/ui/Button";
-import { SectionTitle } from "../../components/SectionTitle";
+import Footer from "../../components/Footer";
+
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function Login({ onLogin }) {
       setError("Email ou senha incorretos");
     } else {
       setError("");
-      onLogin(data);
+      onLogin(data); // onLogin agora vai salvar no localStorage através do App.jsx
     }
   };
 
@@ -44,7 +44,7 @@ export default function Login({ onLogin }) {
           </form>
         </Container>
       </main>
-      <Footer />
+      <Footer showNav={false} />
     </>
   );
 }

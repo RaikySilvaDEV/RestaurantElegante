@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import * as icons from "lucide-react";
-import { Container } from "../components/ui/Container.jsx";
-import { supabase } from "../config/SupabaseClient.js";
+import { Container } from "../ui/Container.jsx";
+import { supabase } from "../../config/SupabaseClient.js";
 const Highlights = () => {
   const [featured, setFeatured] = useState([]);
 

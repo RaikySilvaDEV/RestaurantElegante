@@ -31,8 +31,10 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
-    signInWithGoogle: () => supabase.auth.signInWithOAuth({ provider: "google" }),
+    signInWithGoogle: () => supabase.auth.signInWithOAuth({ provider: 'google' }),
     signOut: () => supabase.auth.signOut(),
+    signInWithPassword: (email, password) => supabase.auth.signInWithPassword({ email, password }),
+    signUp: (email, password, fullName) => supabase.auth.signUp({ email, password, options: { data: { full_name: fullName } } }),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

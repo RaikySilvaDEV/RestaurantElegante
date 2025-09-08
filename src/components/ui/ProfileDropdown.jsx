@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ChevronDown, BookMarked, User, LogOut } from 'lucide-react';
-import { useAuth } from '../config/hooks/useAuth';
+import { ChevronDown, BookMarked, User, LogOut, MessageSquare } from 'lucide-react';
+import { useAuth } from '../../config/hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 
 function classNames(...classes) {
@@ -27,6 +27,7 @@ export default function ProfileDropdown({ user, isMobile = false, closeMobileMen
       <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4 flex flex-col items-start gap-4">
         <span className="text-sm font-medium w-full">Olá, {userName}</span>
         <Link to="/meus-dados" className="text-sm text-zinc-700 dark:text-zinc-300 w-full" onClick={closeMobileMenu}>Meus Dados</Link>
+        <Link to="/deixar-depoimento" className="text-sm text-zinc-700 dark:text-zinc-300 w-full" onClick={closeMobileMenu}>Meu Depoimento</Link>
         <Link to="/minhas-reservas" className="text-sm text-zinc-700 dark:text-zinc-300 w-full" onClick={closeMobileMenu}>Minhas Reservas</Link>
         <button onClick={handleSignOut} className="text-sm text-red-600 dark:text-red-500 w-full text-left">Sair</button>
       </div>
@@ -47,6 +48,9 @@ export default function ProfileDropdown({ user, isMobile = false, closeMobileMen
           <div className="py-1">
             <Menu.Item>
               {({ active }) => <Link to="/meus-dados" className={classNames(active ? 'bg-zinc-100 dark:bg-zinc-800' : '', 'group flex items-center w-full px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200')}><User className="mr-3 h-5 w-5 text-zinc-400 group-hover:text-zinc-500" aria-hidden="true" />Meus Dados</Link>}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => <Link to="/deixar-depoimento" className={classNames(active ? 'bg-zinc-100 dark:bg-zinc-800' : '', 'group flex items-center w-full px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200')}><MessageSquare className="mr-3 h-5 w-5 text-zinc-400 group-hover:text-zinc-500" aria-hidden="true" />Meu Depoimento</Link>}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => <Link to="/minhas-reservas" className={classNames(active ? 'bg-zinc-100 dark:bg-zinc-800' : '', 'group flex items-center w-full px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200')}><BookMarked className="mr-3 h-5 w-5 text-zinc-400 group-hover:text-zinc-500" aria-hidden="true" />Minhas Reservas</Link>}
