@@ -43,7 +43,7 @@ const Hero = () => {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Button
-              href="#reservas"
+              href="/reservas"
               className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg hover:shadow-amber-500/40 transform hover:scale-105 transition-transform duration-300"
             >
               Reservar Mesa

@@ -44,6 +44,31 @@ const Reservas = () => {
     }
   }, [location.state]);
 
+  // Efeito para Realtime
+  useEffect(() => {
+    if (user && reservaParaAlterar) {
+      const channel = supabase
+        .channel(`reserva_check_${reservaParaAlterar.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'reservas',
+            filter: `id=eq.${reservaParaAlterar.id}`,
+          },
+          (payload) => {
+            // A reserva foi alterada (ex: confirmada pelo admin)
+            // Redireciona o usuário para a lista de reservas com um aviso.
+            navigate('/minhas-reservas', { state: { alert: { message: 'O status desta reserva foi atualizado. Verifique suas reservas.', type: 'info' } } });
+          }
+        )
+        .subscribe();
+
+      return () => supabase.removeChannel(channel);
+    }
+  }, [user, reservaParaAlterar, navigate, supabase]);
+
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const reservar = async (e) => {

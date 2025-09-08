@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { ChefHat } from "lucide-react";
 import { Container } from "./ui/Container.jsx";
 import { Button } from "./ui/Button.jsx";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../config/hooks/useAuth.jsx";
-import { useLocation } from "react-router-dom";
 import { supabase } from "../config/SupabaseClient.js";
 import ProfileDropdown from './ProfileDropdown.jsx';
 
@@ -44,17 +44,17 @@ export default function Navbar() {
       <Container className="flex h-16 items-center justify-between">
         <a href="#inicio" className="flex items-center gap-2 font-semibold">
           <ChefHat className="h-6 w-6" />
-          <span>Restaurante Elegante</span>
+          <span className="hidden sm:inline">Restaurante Elegante</span>
         </a>
         <nav className="hidden md:flex items-center gap-6">
           {nav && nav.map((item) => (
-            <a
+            <Link
               key={item.nome}
-              href={item.href.startsWith('#') && isHomePage ? item.href : `/${item.href.replace('#', '')}`}
+              to={item.href.startsWith('#') && isHomePage ? item.href : item.href}
               className="text-sm text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
             >
               {item.nome}
-            </a>
+            </Link>
           ))}
           {user 
             ? <ProfileDropdown user={user} />
@@ -77,15 +77,14 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800">
           <Container className="py-4 flex flex-col gap-4">
-            {nav && nav.map((item) => (
-              <a
-                key={item.nome}
-                href={item.href.startsWith('#') && isHomePage ? item.href : `/${item.href.replace('#', '')}`}
-                className="text-sm text-zinc-700 dark:text-zinc-300" onClick={() => setOpen(false)}
-              >
+            {nav.map((item) => {
+            const finalHref = item.href.startsWith('#') && isHomePage ? item.href : item.href;
+            return (
+              <Link key={item.nome} to={finalHref} className="hover:underline" onClick={() => setOpen(false)}>
                 {item.nome}
-              </a>
-            ))}
+              </Link>
+            );
+          })}
             {user ? (
               <ProfileDropdown user={user} isMobile={true} closeMobileMenu={() => setOpen(false)} />
             ) : (

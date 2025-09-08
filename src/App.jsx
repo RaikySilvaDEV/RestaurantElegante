@@ -6,6 +6,7 @@ import PainelAdmin from "./pages/Admin/PainelAdmin";
 import MinhasReservas from "./pages/MinhasReservas.jsx";
 import MeusDados from "./pages/MeusDados.jsx";
 import ReservasPage from "./pages/ReservasPage.jsx";
+import CardapioPage from "./pages/CardapioPage.jsx";
 import ContatoPage from "./pages/ContatoPage.jsx";
 import { AuthProvider } from "./config/hooks/useAuth.jsx";
 
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/minhas-reservas" element={<MinhasReservas />} />
           <Route path="/meus-dados" element={<MeusDados />} />
           <Route path="/reservas" element={<ReservasPage />} />
+          <Route path="/cardapio" element={<CardapioPage />} />
           <Route path="/contato" element={<ContatoPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

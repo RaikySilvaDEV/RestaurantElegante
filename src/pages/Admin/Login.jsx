@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { supabase } from "../../config/SupabaseClient";
+import { supabase } from "../../config/SupabaseClient.js";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Container } from "../../components/ui/Container";

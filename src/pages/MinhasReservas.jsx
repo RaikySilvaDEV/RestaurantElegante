@@ -50,7 +50,33 @@ const MinhasReservas = () => {
       // Limpa o state para não mostrar o alerta novamente ao recarregar
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [user, authLoading, fetchReservas]);
+
+    // Configura a 'escuta' por mudanças em tempo real na tabela de reservas
+    if (user) {
+      const channel = supabase
+        .channel(`reservas_usuario_${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'reservas',
+            filter: `cliente_id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log('Mudança na reserva recebida!', payload);
+            // Atualiza a lista de reservas para refletir a mudança
+            fetchReservas();
+          }
+        )
+        .subscribe();
+
+      // Limpa a inscrição ao desmontar o componente
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user, authLoading, fetchReservas, navigate, location.pathname, location.state]);
 
   const handleCancel = async (reservaId) => {
     if (window.confirm('Tem certeza que deseja cancelar esta reserva?')) {

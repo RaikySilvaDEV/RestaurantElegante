@@ -3,8 +3,7 @@ import { Container } from "../components/ui/Container";
 import { SectionTitle } from "../components/SectionTitle";
 import { Button } from "../components/ui/Button";
 import { supabase } from "../config/SupabaseClient.js";
-
-const Cardapio = () => {
+const Cardapio = ({ isPage = false }) => {
   const [menu, setMenu] = useState([]);
 
   useEffect(() => {
@@ -37,8 +36,12 @@ const Cardapio = () => {
 
   return (
     <section id="cardapio" className="bg-zinc-50 dark:bg-zinc-900">
-      <Container className="py-20">
-        <SectionTitle title="Cardápio" subtitle="Seleção enxuta e elegante, com ingredientes frescos e execução precisa." />
+      <Container className={isPage ? "py-24 sm:py-32" : "py-20"}>
+        {isPage ? (
+          <SectionTitle title="Nosso Cardápio" subtitle="Explore nossa seleção completa de pratos e bebidas." />
+        ) : (
+          <SectionTitle title="Cardápio" subtitle="Seleção enxuta e elegante, com ingredientes frescos e execução precisa." />
+        )}
         <div className="space-y-12">
           {menu.map((sec) => (
             <div key={sec.categoria}>
@@ -60,9 +63,11 @@ const Cardapio = () => {
             </div>
           ))}
         </div>
-        <div className="mt-10 text-center">
-          <Button href="/reservas">Fazer reserva</Button>
-        </div>
+        {!isPage && (
+          <div className="mt-10 text-center">
+            <Button href="/reservas">Fazer reserva</Button>
+          </div>
+        )}
       </Container>
     </section>
   );
